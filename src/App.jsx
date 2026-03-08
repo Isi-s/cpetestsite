@@ -25,7 +25,7 @@ function App() {
 
     setUploading(true);
     try {
-      const response = await axios.post('https://limewire.com/d/U2Aa7#Lygs4l92Ug', formData, {
+      const response = await axios.post('https://limewire.com/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
