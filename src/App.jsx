@@ -1,6 +1,6 @@
 import { useState } from "react";
 //import { upload } from '@vercel/blob/client';
-import { handleUpload } from '@vercel/blob/client';
+//import { handleUpload } from '@vercel/blob/client';
 import uniben from './assets/uniben-logo.svg';
 import './App.css';
 
@@ -35,9 +35,9 @@ function App() {
           
             <tbody>
           <tr>
-            <td><a href="public/data/data.jpg" download ="Study-hours-data">Download image</a></td>
-            <td><a href="public/data/wine.csv" download ="wine.csv">Download dataset</a></td>
-            <td><a href="public/data/diabetes2.csv" download="diabetes2.csv">Download dataset</a></td>
+            <td><a href="data/data.jpg" download ="Study-hours-data">Download image</a></td>
+            <td><a href="data/wine.csv" download ="wine.csv">Download dataset</a></td>
+            <td><a href="data/diabetes2.csv" download="diabetes2.csv">Download dataset</a></td>
           </tr>
               </tbody>       
 
