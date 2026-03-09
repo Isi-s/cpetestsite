@@ -1,0 +1,145 @@
+//Upload file to vercel blob storage;
+  const handleChange = (event) => {
+  const files = event.target.files;
+  
+  
+  if (files && files.length > 0) {
+    const file = files[0];
+    console.log("Selected file:", file);
+  } 
+  else {
+    console.log("No file selected");
+  }
+};
+const handleSubmit = async (event) => {
+  event.preventDefault();
+  const file = event.target.files[0];
+  
+
+  try{
+    const blob = await upload(file.name, file,{
+      access: 'public',
+      handleUploadUrl: "api/upload"
+    })
+  }catch(error){
+    console.error('Error uploading file:', error);
+  }
+}
+///
+ return (
+    <div>
+      <h2>Upload a File</h2>
+      <form onSubmit={handleUpload}>
+        <input type="file" ref={inputFileRef} />
+        <button type="submit">Upload</button>
+      </form>
+      {blob && <p>File uploaded: {blob.url}</p>}
+    </div>
+  );
+
+  //new codes
+
+
+  const inputFileRef = useRef(null);
+  const [blob, setBlob] = useState(null);
+
+  const handleUpload = async (event) => {
+    event.preventDefault();
+    if (!inputFileRef.current?.files?.length) return;
+
+    const file = inputFileRef.current.files[0];
+    const result = await upload(file, {
+      access: "public", // or "private"
+      handleUploadUrl: "api/upload"
+    });
+    setBlob(result);
+  };
+
+  //new codes
+  const [url, setUrl] = useState(null);
+
+  const handleUpload = async (event) => {
+    const file = event.target.files[0];
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await fetch("http://localhost:8000/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+    setUrl(data.url); // Blob URL returned by FastAPI
+  };
+
+
+//newer codes
+const [file, setFile] = useState(null);
+  const [blobUrl, setBlobUrl] = useState('');
+
+  const handleFileChange = (event) => {
+    setFile(event.target.files[0]);
+  };
+
+  const handleUploadComplete = async () => {
+    if (!file) return;
+
+    try {
+      // 1. Get an authenticated URL from your FastAPI backend (next step)
+      const response = await fetch('http://localhost:8000/api/upload', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ filename: file.name, contentType: file.type }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get upload URL from backend');
+      }
+
+      const { url: uploadUrl } = await response.json();
+
+      // 2. Upload the file directly to Vercel Blob storage using the client SDK
+      const newBlob = await handleUpload({
+        file,
+        handleUploadUrl: uploadUrl, // Pass the pre-signed URL
+        options: {
+          // Optional: Add custom logic here if needed
+        }
+      });
+
+      setBlobUrl(newBlob.url);
+      console.log('Upload complete:', newBlob.url);
+      // You can now store newBlob.url in your database via another FastAPI endpoint
+    } catch (error) {
+      console.error('Upload failed:', error);
+    }
+  };
+
+  //
+  import { handleUpload } from '@vercel/blob/client';
+
+ <input type="file"
+      className='centered'
+      accept=".pdf, .r, .txt"
+      onChange={handleFileChange}
+      />
+
+ <div className="centered">
+        <p><strong>Submission Section</strong></p>
+        <small>Upload your script file here, and 
+          click the submit button</small>
+          <br/>
+     
+        <br/>
+        <br/>
+        <button onClick={handleUploadComplete} className="submit-btn">
+        Submit Script File
+        </button>
+        <p>
+          {blobUrl && <p>File uploaded: <a href={blobUrl} target="_blank" rel="noopener noreferrer">{blobUrl}</a></p>}
+        </p>
+      </div>
+
+
